@@ -25,9 +25,15 @@ namespace Cityinfo.API
                 },
                 new CityDto()
                 {
-                    Id = 1,
+                    Id = 2,
                     Name = "Trivandrum",
                     Description = "Capital city of Kerala"
+                },
+                new CityDto()
+                {
+                    Id = 3,
+                    Name = "Chennai",
+                    Description = "Capital city of TN"
                 }
             };
         }
