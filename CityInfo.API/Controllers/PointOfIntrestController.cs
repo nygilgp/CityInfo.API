@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CityInfo.API;
 using Cityinfo.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace CityInfo.API.Controllers
 {
@@ -125,6 +126,56 @@ namespace CityInfo.API.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{cityId}/pointsofiterest/{id}")]
+        public IActionResult PartiallyUpdatePointOfIntrest(int cityId, int id,
+           [FromBody] JsonPatchDocument<PointOfInterestForUpdateDto> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+
+            var city = CitiesDataStore.Current.Cities.Find(c => c.Id == cityId);
+
+            if (city == null)
+            {
+                return NotFound();
+            }
+
+            var pointOfInterestFromStore = city.PointsOfInterest.FirstOrDefault(p => p.Id == id);
+
+            if (pointOfInterestFromStore == null)
+            {
+                return NotFound();
+            }
+
+            var pointOfInterestToPatch = new PointOfInterestForUpdateDto()
+            {
+                Name = pointOfInterestFromStore.Name,
+                Description = pointOfInterestFromStore.Description
+            };
+            patchDoc.ApplyTo(pointOfInterestToPatch, ModelState);
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            // Validation for name and description 
+            if (pointOfInterestToPatch.Name == pointOfInterestToPatch.Description)
+            {
+                ModelState.AddModelError("Description", "The provided description should be different from name.");
+            }
+            TryValidateModel(pointOfInterestToPatch);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            pointOfInterestFromStore.Name = pointOfInterestToPatch.Name;
+            pointOfInterestFromStore.Description = pointOfInterestToPatch.Description;
+
+            return NoContent();
+        }
 
     }
 }
