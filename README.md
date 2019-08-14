@@ -17,3 +17,9 @@ Leve 400 Client error
 
 Level 500 Sever Error
 - 500 Internal server error, client can't do anything about it
+
+## Inversion of Control
+delegates the function of selecting a concrete implemenation type for a class's dependencies to an external component
+
+## Dependecy Injuction
+is a specialization of Inversion of Control pattern. The DI pattern uses an object - the container - to initialize the objects and provide the required dependecy to the object.  
